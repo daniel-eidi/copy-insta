@@ -111,7 +111,9 @@ function InputForm({ onUpload, onUrlSubmit }) {
           className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
             dragActive
               ? 'border-purple-500 bg-purple-500/10'
-              : 'border-gray-700 hover:border-gray-600'
+              : selectedFile
+                ? 'border-purple-500/50 bg-purple-500/5'
+                : 'border-gray-700 hover:border-gray-600'
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -127,7 +129,7 @@ function InputForm({ onUpload, onUrlSubmit }) {
           />
 
           {selectedFile ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Film className="w-12 h-12 mx-auto text-purple-500" />
               <div>
                 <p className="font-medium">{selectedFile.name}</p>
@@ -135,12 +137,7 @@ function InputForm({ onUpload, onUrlSubmit }) {
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
-              <button
-                onClick={handleUploadSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl font-medium hover:opacity-90 transition-opacity"
-              >
-                Processar Video
-              </button>
+              <p className="text-xs text-gray-500">Clique para trocar o arquivo</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -152,6 +149,16 @@ function InputForm({ onUpload, onUrlSubmit }) {
             </div>
           )}
         </div>
+
+        {/* Process button - outside the drop zone */}
+        {selectedFile && (
+          <button
+            onClick={handleUploadSubmit}
+            className="w-full mt-4 px-6 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+          >
+            Processar Video
+          </button>
+        )}
       </div>
     </div>
   )

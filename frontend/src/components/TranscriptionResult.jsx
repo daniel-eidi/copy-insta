@@ -105,11 +105,13 @@ function TranscriptionResult({ transcription, speakers, jobId, onBack, onVideoGe
     setGeneratingType(translate ? 'translated' : 'original')
 
     try {
+      // Remove # from color to avoid URL encoding issues
+      const bgColor = backgroundColor.replace('#', '')
       const params = new URLSearchParams({
         job_id: jobId,
         translate: translate.toString(),
         target_language: 'Portuguese',
-        background_color: backgroundColor
+        background_color: bgColor
       })
 
       const response = await fetch(`${API_BASE}/api/generate-audio-video?${params}`, {
