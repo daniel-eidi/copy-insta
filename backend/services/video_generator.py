@@ -374,8 +374,8 @@ class KaraokeVideoGenerator:
         if not current_subtitle:
             return np.array(img)
 
-        # Font setup - larger for movie subtitles
-        subtitle_font_size = 72
+        # Font setup - large for movie subtitles
+        subtitle_font_size = 96
         try:
             font = ImageFont.truetype("arialbd.ttf", subtitle_font_size)
         except:
