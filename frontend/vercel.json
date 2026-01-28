@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://copy-insta-backend-496927144643.us-central1.run.app/api/:path*"
+    },
+    {
+      "source": "/outputs/:path*",
+      "destination": "https://copy-insta-backend-496927144643.us-central1.run.app/outputs/:path*"
+    }
+  ]
+}
