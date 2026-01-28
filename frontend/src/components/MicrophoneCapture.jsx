@@ -41,14 +41,21 @@ function MicrophoneCapture({ onAudioCaptured }) {
     setIsPreparing(true)
     audioChunksRef.current = []
 
+    // Check if mediaDevices is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError('Seu navegador nao suporta acesso ao microfone. Tente usar Chrome, Firefox ou Safari.')
+      setIsPreparing(false)
+      return
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      })
+      console.log('Requesting microphone permission...')
+
+      // Simpler audio constraints for better iOS compatibility
+      const constraints = { audio: true }
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      console.log('Microphone permission granted!', stream)
 
       streamRef.current = stream
 
@@ -104,14 +111,22 @@ function MicrophoneCapture({ onAudioCaptured }) {
 
     } catch (err) {
       console.error('Error accessing microphone:', err)
+      console.error('Error name:', err.name)
+      console.error('Error message:', err.message)
       setIsPreparing(false)
 
-      if (err.name === 'NotAllowedError') {
-        setError('Permissao negada. Por favor, permita o acesso ao microfone.')
-      } else if (err.name === 'NotFoundError') {
-        setError('Nenhum microfone encontrado.')
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('Permissao negada. Clique no icone do cadeado na barra de endereco e permita o acesso ao microfone.')
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setError('Nenhum microfone encontrado no dispositivo.')
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        setError('O microfone esta sendo usado por outro aplicativo.')
+      } else if (err.name === 'OverconstrainedError') {
+        setError('Configuracao de audio nao suportada pelo dispositivo.')
+      } else if (err.name === 'SecurityError') {
+        setError('Acesso ao microfone bloqueado. Verifique se o site esta usando HTTPS.')
       } else {
-        setError('Erro ao acessar o microfone: ' + err.message)
+        setError(`Erro ao acessar o microfone (${err.name}): ${err.message}`)
       }
     }
   }
