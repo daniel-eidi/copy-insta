@@ -443,7 +443,7 @@ async def generate_audio_video_job(
 
 
 @app.post("/api/generate-audio-video")
-async def generate_audio_video(background_tasks: BackgroundTasks, job_id: str, translate: bool = False, target_language: str = "Portuguese"):
+async def generate_audio_video(background_tasks: BackgroundTasks, job_id: str, translate: bool = False, target_language: str = "Portuguese", background_color: str = "#000000"):
     """Generate karaoke video from audio transcription with optional translation"""
     if job_id not in jobs:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -465,7 +465,7 @@ async def generate_audio_video(background_tasks: BackgroundTasks, job_id: str, t
         job_id,
         translate,
         target_language,
-        "#000000",
+        background_color,
         "#FFFFFF"
     )
 

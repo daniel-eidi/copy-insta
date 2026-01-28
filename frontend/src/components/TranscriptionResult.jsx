@@ -12,6 +12,7 @@ function TranscriptionResult({ transcription, speakers, jobId, onBack, onVideoGe
   const [copied, setCopied] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [generatingType, setGeneratingType] = useState(null)
+  const [backgroundColor, setBackgroundColor] = useState('#000000')
 
   const getFullText = () => {
     return transcription.words.map(w => w.word).join(' ')
@@ -107,7 +108,8 @@ function TranscriptionResult({ transcription, speakers, jobId, onBack, onVideoGe
       const params = new URLSearchParams({
         job_id: jobId,
         translate: translate.toString(),
-        target_language: 'Portuguese'
+        target_language: 'Portuguese',
+        background_color: backgroundColor
       })
 
       const response = await fetch(`${API_BASE}/api/generate-audio-video?${params}`, {
@@ -232,6 +234,35 @@ function TranscriptionResult({ transcription, speakers, jobId, onBack, onVideoGe
           Gerar Video Karaoke
         </h2>
 
+        {/* Background color selector */}
+        <div className="mb-4">
+          <p className="text-sm text-gray-400 mb-2">Cor do fundo:</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setBackgroundColor('#000000')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                backgroundColor === '#000000'
+                  ? 'border-purple-500 bg-purple-500/20'
+                  : 'border-gray-700 hover:border-gray-600'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-black border border-gray-600" />
+              <span className="text-sm">Preto</span>
+            </button>
+            <button
+              onClick={() => setBackgroundColor('#FFFFFF')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                backgroundColor === '#FFFFFF'
+                  ? 'border-purple-500 bg-purple-500/20'
+                  : 'border-gray-700 hover:border-gray-600'
+              }`}
+            >
+              <div className="w-5 h-5 rounded bg-white border border-gray-600" />
+              <span className="text-sm">Branco</span>
+            </button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => handleGenerateVideo(false)}
@@ -271,7 +302,9 @@ function TranscriptionResult({ transcription, speakers, jobId, onBack, onVideoGe
         </div>
 
         <p className="text-sm text-gray-500 mt-3 text-center">
-          Fundo preto com letras brancas sincronizadas com o audio
+          {backgroundColor === '#000000'
+            ? 'Fundo preto com letras brancas sincronizadas com o audio'
+            : 'Fundo branco com letras pretas sincronizadas com o audio'}
         </p>
       </div>
 

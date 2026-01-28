@@ -375,7 +375,7 @@ class KaraokeVideoGenerator:
             return np.array(img)
 
         # Font setup - larger for movie subtitles
-        subtitle_font_size = 52
+        subtitle_font_size = 72
         try:
             font = ImageFont.truetype("arialbd.ttf", subtitle_font_size)
         except:
@@ -395,9 +395,20 @@ class KaraokeVideoGenerator:
         total_height = len(lines) * line_height
         start_y = self.height - total_height - 120  # 120px from bottom
 
+        # Determine text/outline colors based on background brightness
+        # Calculate luminance: 0.299*R + 0.587*G + 0.114*B
+        bg_luminance = 0.299 * bg_rgb[0] + 0.587 * bg_rgb[1] + 0.114 * bg_rgb[2]
+        is_light_background = bg_luminance > 128
+
         # Draw each line with outline (movie subtitle style)
-        outline_color = (0, 0, 0)  # Black outline
-        text_color = (255, 255, 255)  # White text
+        if is_light_background:
+            # Light background: black text with white outline
+            text_color = (0, 0, 0)
+            outline_color = (255, 255, 255)
+        else:
+            # Dark background: white text with black outline
+            text_color = (255, 255, 255)
+            outline_color = (0, 0, 0)
         outline_width = 3
 
         for line_idx, line in enumerate(lines):
