@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import InputForm from './components/InputForm'
 import AudioCapture from './components/AudioCapture'
+import MicrophoneCapture from './components/MicrophoneCapture'
 import ProcessingStatus from './components/ProcessingStatus'
 import SpeakerEditor from './components/SpeakerEditor'
 import VideoPreview from './components/VideoPreview'
@@ -199,7 +200,11 @@ function App() {
         {/* Step: Input */}
         {step === 'input' && (
           <div className="space-y-6">
-            <AudioCapture onAudioCaptured={handleAudioCapture} />
+            {/* Audio capture options */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <MicrophoneCapture onAudioCaptured={handleAudioCapture} />
+              <AudioCapture onAudioCaptured={handleAudioCapture} />
+            </div>
 
             <div className="flex items-center gap-4">
               <div className="flex-1 h-px bg-gray-800"></div>

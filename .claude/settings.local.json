@@ -12,7 +12,8 @@
       "Bash(npm.cmd install:*)",
       "Bash(npm.cmd run dev:*)",
       "Bash(export PATH=\"$PATH:/c/Users/User/AppData/Local/Microsoft/WinGet/Links\")",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(git push:*)"
     ]
   }
 }
