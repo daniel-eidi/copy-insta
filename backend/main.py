@@ -400,7 +400,7 @@ async def generate_audio_video_job(
     background_color: str = "#000000",
     highlight_color: str = "#FFFFFF"
 ):
-    """Background task to generate karaoke video from audio transcription"""
+    """Background task to generate karaoke video from audio/video transcription"""
     try:
         update_job_status(job_id, JobStatus.GENERATING_VIDEO, 10, "Preparing video generation...")
 
@@ -408,7 +408,25 @@ async def generate_audio_video_job(
         if not job:
             raise Exception("Job not found")
 
+        # Get audio path - either directly from audio upload or extract from video
         audio_path = job.get("audio_path")
+        video_path = job.get("video_path")
+
+        # If we have video but no audio, extract audio from video
+        if not audio_path and video_path:
+            update_job_status(job_id, JobStatus.GENERATING_VIDEO, 15, "Extracting audio from video...")
+            from pydub import AudioSegment
+            import tempfile
+
+            # Extract audio from video
+            audio_segment = AudioSegment.from_file(video_path)
+            audio_path = tempfile.mktemp(suffix=".mp3")
+            audio_segment.export(audio_path, format="mp3")
+            job["extracted_audio_path"] = audio_path  # Store for cleanup
+
+        if not audio_path:
+            raise Exception("No audio source available")
+
         words_data = job.get("words", [])
         words = [WordTimestamp(**w) for w in words_data]
 
@@ -444,7 +462,7 @@ async def generate_audio_video_job(
 
 @app.post("/api/generate-audio-video")
 async def generate_audio_video(background_tasks: BackgroundTasks, job_id: str, translate: bool = False, target_language: str = "Portuguese", background_color: str = "000000"):
-    """Generate karaoke video from audio transcription with optional translation"""
+    """Generate karaoke video from audio/video transcription with optional translation"""
     if job_id not in jobs:
         raise HTTPException(status_code=404, detail="Job not found")
 
@@ -453,8 +471,9 @@ async def generate_audio_video(background_tasks: BackgroundTasks, job_id: str, t
     if "words" not in job:
         raise HTTPException(status_code=400, detail="Transcription not yet complete")
 
-    if "audio_path" not in job:
-        raise HTTPException(status_code=400, detail="This job does not have audio data")
+    # Check if we have either audio_path or video_path
+    if "audio_path" not in job and "video_path" not in job:
+        raise HTTPException(status_code=400, detail="This job does not have audio or video data")
 
     # Normalize background color (add # if missing)
     bg_color = background_color if background_color.startswith('#') else f'#{background_color}'
